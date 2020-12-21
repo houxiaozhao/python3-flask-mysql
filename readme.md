@@ -192,7 +192,7 @@
 
 ![](http://obr4xf51d.bkt.clouddn.com/18-8-25/83459102.jpg)
 
-11. 提供简单rest接口`user`
+11. 提供简单rest接口`user` (有部分改动,以代码为准)
 
     ```python
     from flask import jsonify, request
