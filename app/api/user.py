@@ -1,3 +1,5 @@
+import json
+
 from flask import jsonify, request
 from app.api import bp
 
@@ -10,12 +12,13 @@ from app.error import bad_request
 def get_users():
     limit = min(request.args.get('limit', 10, int), 100)
     offset = (request.args.get('page', 1, int) - 1) * request.args.get('limit', 10, int)
-    return jsonify([user.to_dict() for user in User.query.limit(limit).offset(offset).all()])
+    return jsonify([user.to_dict(show=['posts']) for user in User.query.limit(limit).offset(offset).all()])
 
 
 @bp.route('/users/<int:id>', methods=['GET'])
 def get_user(id):
     return jsonify(User.query.get_or_404(id).to_dict())
+    # return jsonify(User.query.get_or_404(id).to_dict(show=['posts']))
 
 
 @bp.route('/users', methods=['POST'])
@@ -23,7 +26,8 @@ def add_user():
     data = request.get_json() or {}
     if 'username' not in data:
         return bad_request('错误的参数')
-    user = User(username=data['username'])
+    user = User()
+    user.from_dict(**data)
     db.session.add(user)
     db.session.commit()
     return jsonify(user.to_dict())
